@@ -15,7 +15,6 @@ class Payment(models.Model):
     booking = models.OneToOneField('bookings.Booking', on_delete=models.RESTRICT, related_name='payment')
 
     def get_amount(self):
-        """Calculate the amount based on the seat class in the booking and number of passengers."""
         if self.booking.seat_class == 'Economy':
             return self.booking.flight.economy_price * self.booking.number_of_passengers
         elif self.booking.seat_class == 'Business':

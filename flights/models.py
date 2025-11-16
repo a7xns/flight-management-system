@@ -57,7 +57,7 @@ class Flight(models.Model):
             return f"{int(hours)} hours and {int(minutes)} minutes"
         return None
 
-    def clean(self):
+    def check_flight(self):
         if self.departure_datetime >= self.arrival_datetime:
             raise ValidationError("Departure time must be before arrival time.")
         if self.departure_airport == self.arrival_airport:

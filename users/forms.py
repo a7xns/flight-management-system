@@ -9,7 +9,7 @@ It includes:
 
 
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
 
 from .models import PassengerProfile
@@ -24,6 +24,7 @@ class PassengerCreationForm(UserCreationForm):
     the User and the linked PassengerProfile.
     """
 
+    email = forms.EmailField(required=True)
     phone_number = forms.CharField(max_length=20, required=False)
     passport_number = forms.CharField(max_length=50, required=False)
 
@@ -62,4 +63,23 @@ class PassengerCreationForm(UserCreationForm):
             )
 
         return user
-    
+
+
+class EmailAuthenticationForm(AuthenticationForm):
+    """
+    Custom authentication form that uses email instead of username.
+    """
+    username = forms.EmailField(label='Email', widget=forms.EmailInput(attrs={'class': 'form-control'}))
+
+    def clean(self):
+        email = self.cleaned_data.get('username')
+        password = self.cleaned_data.get('password')
+
+        if email and password:
+            try:
+                user = User.objects.get(email=email)
+                self.user_cache = user
+            except User.DoesNotExist:
+                self.add_error('username', 'Invalid email or password.')
+        
+        return self.cleaned_data
