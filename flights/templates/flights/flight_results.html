@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flight Results - Flight Management System</title>
+    <!-- Bootstrap CSS CDN (FIXED) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" xintegrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <!-- Bootstrap Icons CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: #f8f9fa;
+        }
+        main {
+            flex-grow: 1;
+        }
+        /* Using the same card style for consistency */
+        .flight-card, .filter-card {
+            border: 0;
+            border-radius: 1rem;
+            box-shadow: 0 0.5rem 1rem 0 rgba(0, 0, 0, 0.05);
+            background-color: #ffffff;
+        }
+        .flight-card {
+            /* Add a subtle hover effect */
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .flight-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0.75rem 1.5rem 0 rgba(0, 0, 0, 0.07);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 1. Consistent Navbar (Logged-in Passenger) -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="passenger-dashboard.html">
+                Flight Management System
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="passenger-dashboard.html">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="my-bookings.html">My Bookings</a>
+                    </li>
+                    <!-- Profile Dropdown -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person-circle"></i> Profile
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="profile.html">View Profile</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="login.html">Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 2. Main Page Content (Flight Results) -->
+    <main class="py-5">
+        <div class="container">
+            
+            <!-- Search Summary -->
+            <div class="mb-4">
+                <h2 class="mb-0">Flights from Dammam (DMM) to Riyadh (RUH)</h2>
+                <p class="text-muted fs-5">Showing 3 results for November 28, 2025</p>
+            </div>
+
+            <div class="row g-4">
+                
+                <!-- NEW: Filters Column -->
+                <div class="col-lg-4">
+                    <div class="card filter-card">
+                        <div class="card-body p-4">
+                            <h4 class="card-title mb-4">Filters</h4>
+                            <form>
+                                <!-- UPDATED: Row for Trip Type and Stops -->
+                                <div class="row mb-4">
+                                    <!-- Trip Type -->
+                                    <div class="col-6">
+                                        <h6 class="mb-3">Trip Type</h6>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="tripType" id="oneWay" value="oneWay" checked>
+                                            <label class="form-check-label" for="oneWay">
+                                                One Way
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="tripType" id="roundTrip" value="roundTrip">
+                                            <label class="form-check-label" for="roundTrip">
+                                                Round Trip
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <!-- Stops -->
+                                    <div class="col-6">
+                                        <h6 class="mb-3">Stops</h6>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="direct" value="direct" checked>
+                                            <label class="form-check-label" for="direct">
+                                                Direct (2)
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="oneStop" value="oneStop" checked>
+                                            <label class="form-check-label" for="oneStop">
+                                                1 Stop (1)
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Price Range -->
+                                <div class="mb-4">
+                                    <h6 class="mb-3">Price Range</h6>
+                                    <div class="row g-2">
+                                        <div class="col">
+                                            <label for="minPrice" class="form-label visually-hidden">Min Price</label>
+                                            <!-- Rule 6: Error Prevention (min="0") -->
+                                            <input type="number" class="form-control" id="minPrice" placeholder="Min" min="0">
+                                        </div>
+                                        <div class="col">
+                                            <label for="maxPrice" class="form-label visually-hidden">Max Price</label>
+                                            <input type="number" class="form-control" id="maxPrice" placeholder="Max" min="0">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Apply Button -->
+                                <div class="d-grid">
+                                    <button type="submit" class="btn btn-primary btn-lg">Apply Filters</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Flight List Column -->
+                <div class="col-lg-8">
+                    <div class="row g-4">
+                        
+                        <!-- Flight Card 1 (Sample - UPDATED) -->
+                        <div class="col-12">
+                            <div class="card flight-card">
+                                <div class="card-body p-4">
+                                    <div class="row align-items-center">
+                                        <!-- Flight Times & Duration -->
+                                        <div class="col-md-5">
+                                            <div class="d-flex align-items-center">
+                                                <div class="text-center">
+                                                    <h4 class="mb-0">08:30</h4>
+                                                    <span class="fs-5 text-muted">DMM</span>
+                                                </div>
+                                                <div class="flex-grow-1 mx-3 text-center">
+                                                    <div class="text-muted small">1h 15m</div>
+                                                    <div class="border-bottom"></div>
+                                                    <div class="text-success small">Direct</div>
+                                                </div>
+                                                <div class="text-center">
+                                                    <h4 class="mb-0">09:45</h4>
+                                                    <span class="fs-5 text-muted">RUH</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- Flight Info (SIMPLIFIED) -->
+                                        <div class="col-md-4 mt-3 mt-md-0">
+                                            <h5 class="mb-1">Flight XY123</h5>
+                                            <!-- DELETED: Removed plane/class details -->
+                                        </div>
+                                        <!-- Price & Action -->
+                                        <div class="col-md-3 text-md-end mt-3 mt-md-0">
+                                            <h3 class="mb-0">$85.00</h3>
+                                            <p class="text-muted small mb-2">per passenger</p>
+                                            <a href="flight-details.html" class="btn btn-primary btn-lg w-100 w-md-auto">
+                                                View Details
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Flight Card 2 (Sample - UPDATED) -->
+                        <div class="col-12">
+                            <div class="card flight-card">
+                                <div class="card-body p-4">
+                                    <div class="row align-items-center">
+                                        <!-- Flight Times & Duration -->
+                                        <div class="col-md-5">
+                                            <div class="d-flex align-items-center">
+                                                <div class="text-center">
+                                                    <h4 class="mb-0">14:00</h4>
+                                                    <span class="fs-5 text-muted">DMM</span>
+                                                </div>
+                                                <div class="flex-grow-1 mx-3 text-center">
+                                                    <div class="text-muted small">1h 20m</div>
+                                                    <div class="border-bottom"></div>
+                                                    <div class="text-success small">Direct</div>
+                                                </div>
+                                                <div class="text-center">
+                                                    <h4 class="mb-0">15:20</h4>
+                                                    <span class="fs-5 text-muted">RUH</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- Flight Info (SIMPLIFIED) -->
+                                        <div class="col-md-4 mt-3 mt-md-0">
+                                            <h5 class="mb-1">Flight AB456</h5>
+                                        </div>
+                                        <!-- Price & Action -->
+                                        <div class="col-md-3 text-md-end mt-3 mt-md-0">
+                                            <h3 class="mb-0">$150.00</h3>
+                                            <p class="text-muted small mb-2">per passenger</f>
+                                            <a href="flight-details.html" class="btn btn-primary btn-lg w-100 w-md-auto">
+                                                View Details
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Flight Card 3 (Sample - 1 Stop - UPDATED) -->
+                        <div class="col-12">
+                            <div class="card flight-card">
+                                <div class="card-body p-4">
+                                    <div class="row align-items-center">
+                                        <!-- Flight Times & Duration -->
+                                        <div class="col-md-5">
+                                            <div class="d-flex align-items-center">
+                                                <div class="text-center">
+                                                    <h4 class="mb-0">10:00</h4>
+                                                    <span class="fs-5 text-muted">DMM</span>
+                                                </div>
+                                                <div class="flex-grow-1 mx-3 text-center">
+                                                    <div class="text-muted small">3h 30m</div>
+                                                    <div class="border-bottom"></div>
+                                                    <div class="text-warning small">1 Stop (JED)</div>
+                                                </div>
+                                                <div class="text-center">
+                                                    <h4 class="mb-0">13:30</h4>
+                                                    <span class="fs-5 text-muted">RUH</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- Flight Info (SIMPLIFIED) -->
+                                        <div class="col-md-4 mt-3 mt-md-0">
+                                            <h5 class="mb-1">Flight QZ789</h5>
+                                        </div>
+                                        <!-- Price & Action -->
+                                        <div class="col-md-3 text-md-end mt-3 mt-md-0">
+                                            <h3 class="mb-0">$75.00</h3>
+                                            <p class="text-muted small mb-2">per passenger</p>
+                                            <a href="flight-details.html" class="btn btn-primary btn-lg w-100 w-md-auto">
+                                                View Details
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div> <!-- /end inner .row -->
+                </div> <!-- /end .col-lg-8 -->
+
+            </div> <!-- /end outer .row -->
+        </div>
+    </main>
+
+    <!-- 3. Consistent Footer -->
+    <footer class="footer mt-auto py-3 bg-dark text-white">
+        <div class="container text-center">
+            &copy; 2025 Flight Management System - CS 411
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS Bundle (includes Popper) (FIXED) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" xintegrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+</body>
+</html>

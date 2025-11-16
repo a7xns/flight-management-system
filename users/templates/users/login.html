@@ -1,62 +1,112 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <title>Login</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Flight Management System</title>
+    <!-- Bootstrap CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" xintegrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    
     <style>
-        body { background-color: #f8f9fa; }
+        /* This makes the footer stick to the bottom */
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: #f8f9fa; /* Light gray background */
+        }
+        main {
+            flex-grow: 1; /* Pushes footer down */
+        }
+        /* Styling for the login card */
+        .login-card {
+            border: 0;
+            border-radius: 1rem;
+            box-shadow: 0 0.5rem 1rem 0 rgba(0, 0, 0, 0.1);
+        }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="row min-vh-100 d-flex justify-content-center align-items-center">
-        <div class="col-12 col-md-8 col-lg-5">
-            <div class="card shadow-sm">
-                <div class="card-body p-4">
-                    <h2 class="card-title text-center mb-4">Login Page</h2>
+    <!-- 1. Consistent Navbar (Header) -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <!-- You can add a logo here if you have one -->
+                Flight Management System
+            </a>
+            <!-- This button is for mobile navigation, which we can add links to later -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <!-- Navigation links will go here (e.g., Login, Register, Dashboard) -->
+                <!-- For the login page, we can keep it simple -->
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="login.html">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="register.html">Register</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
 
-                    <form method="post" novalidate>
-                        <!-- Django's required security token for POST forms. -->
-                        {% csrf_token %}
+    <!-- 2. Main Page Content (This part changes per page) -->
+    <main class="py-5">
+        <div class="container">
+            <div class="row justify-content-center">
+                <!-- Centering the login form -->
+                <div class="col-md-8 col-lg-6 col-xl-5">
+                    
+                    <div class="card login-card">
+                        <div class="card-body p-4 p-sm-5">
+                            <h3 class="card-title text-center mb-4"> User Login </h3>
+                            
+                            <!-- Login Form -->
+                            <form>
+                                <!-- Email field -->
+                                <div class="form-floating mb-3">
+                                    <input type="email" class="form-control" id="email" placeholder="name@example.com" required>
+                                    <label for="email">Email address</label>
+                                </div>
+                                
+                                <!-- Password field -->
+                                <div class="form-floating mb-3">
+                                    <input type="password" class="form-control" id="password" placeholder="Password" required>
+                                    <label for="password">Password</label>
+                                </div>
 
-                        <!-- Displays general form errors using a Bootstrap alert. -->
-                        {% if form.non_field_errors %}
-                            <div class="alert alert-danger" role="alert">
-                                {% for error in form.non_field_errors %}
-                                    {{ error }}
-                                {% endfor %}
-                            </div>
-                        {% endif %}
+                                <!-- Submit Button -->
+                                <div class="d-grid mb-3">
+                                    <!-- This button will later trigger the backend logic -->
+                                    <button class="btn btn-primary btn-lg" type="submit">Login</button>
+                                </div>
 
-                        <!-- Form group for the username. -->
-                        <div class="mb-3">
-                            <label for="{{ form.username.id_for_label }}" class="form-label">Email</label>
-
-                            <input type="text" name="{{ form.username.name }}" class="form-control" id="{{ form.username.id_for_label }}" required>
+                                <!-- Links from your project documents -->
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <a href="password-reset.html" class="small text-decoration-none">Forgot Password?</a>
+                                    <a href="register.html" class="small text-decoration-none">Don't have an account? Register</a>
+                                </div>
+                            </form>
+                            
                         </div>
-
-                        <!-- Form group for the password. -->
-                        <div class="mb-3">
-                            <label for="{{ form.password.id_for_label }}" class="form-label">Password</label>
-
-                            <input type="password" name="{{ form.password.name }}" class="form-control" id="{{ form.password.id_for_label }}" required>
-                        </div>
-                        
-                        <!-- A Bootstrap grid container to make the button full-width. -->
-                        <div class="d-grid">
-
-                            <button type="submit" class="btn btn-primary">Log In</button>
-                        </div>
-                    </form>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</div>
+    </main>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- 3. Consistent Footer -->
+    <footer class="footer mt-auto py-3 bg-dark text-white">
+        <div class="container text-center">
+            &copy; 2025 Flight Management System - CS 411
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS Bundle (includes Popper) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" xintegrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 </html>

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flight Details - Flight Management System</title>
+    <!-- Bootstrap CSS CDN (FIXED) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" xintegrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <!-- Bootstrap Icons CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: #f8f9fa;
+        }
+        main {
+            flex-grow: 1;
+        }
+        /* Using the same card style for consistency */
+        .details-card {
+            border: 0;
+            border-radius: 1rem;
+            box-shadow: 0 0.5rem 1rem 0 rgba(0, 0, 0, 0.05);
+            background-color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 1. Consistent Navbar (Logged-in Passenger) -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="passenger-dashboard.html">
+                Flight Management System
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="passenger-dashboard.html">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="my-bookings.html">My Bookings</a>
+                    </li>
+                    <!-- Profile Dropdown -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person-circle"></i> Profile
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="profile.html">View Profile</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="login.html">Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 2. Main Page Content (Flight Details) -->
+    <main class="py-5">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    
+                    <!-- Back Button (Rule 5: User Control) -->
+                    <div class="mb-3">
+                        <a href="flight-results.html" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-2"></i> Back to Results
+                        </a>
+                    </div>
+
+                    <div class="card details-card">
+                        <div class="card-body p-4 p-sm-5">
+                            
+                            <!-- Flight Header -->
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <div>
+                                    <h2 class="mb-0">Flight XY123</h2>
+                                    <p class="fs-5 text-muted mb-0">Dammam (DMM) to Riyadh (RUH)</p>
+                                </div>
+                                <div class="text-end">
+                                    <h3 class="mb-0 text-primary">$85.00</h3>
+                                    <span class="text-muted">per passenger</span>
+                                </div>
+                            </div>
+
+                            <!-- Flight Details (UPDATED) -->
+                            <div class="row g-4 mb-4">
+                                <div class="col-md-4">
+                                    <h6 class="text-muted">Departure</h6>
+                                    <h5><i class="bi bi-calendar-event me-2"></i> Nov 28, 2025</h5>
+                                    <h5><i class="bi bi-clock me-2"></i> 08:30</h5>
+                                </div>
+                                <div class="col-md-4">
+                                    <h6 class="text-muted">Arrival</h6>
+                                    <h5><i class="bi bi-calendar-event me-2"></i> Nov 28, 2025</h5>
+                                    <h5><i class="bi bi-clock me-2"></i> 09:45</h5>
+                                </div>
+                                <div class="col-md-4">
+                                    <h6 class="text-muted">Flight Info</h6>
+                                    <p class="mb-1"><strong>Duration:</strong> 1h 15m</p>
+                                    <p class="mb-1"><strong>Aircraft:</strong> Airbus A320</p>
+                                    <!-- DELETED: Class info removed -->
+                                </div>
+                            </div>
+                            
+                            <hr class="my-4">
+
+                            <!-- Passenger Input Form (UPDATED) -->
+                            <form action="seat-selection.html" method="get">
+                                <h4 class="mb-3 text-center">Select Passengers</h4>
+                                <div class="row justify-content-center">
+                                    <div class="col-md-8">
+                                        <div class="row g-3">
+                                            <!-- Adults Input -->
+                                            <div class="col-sm-6">
+                                                <label for="adultsCount" class="form-label">Adults (12+)</label>
+                                                <!-- Rule 6: Error Prevention (min="1") -->
+                                                <input type="number" class="form-control form-control-lg" id="adultsCount" value="1" min="1" required>
+                                            </div>
+                                            <!-- Children Input -->
+                                            <div class="col-sm-6">
+                                                <label for="childrenCount" class="form-label">Children (below 12)</label>
+                                                <!-- Rule 6: Error Prevention (min="0") -->
+                                                <input type="number" class="form-control form-control-lg" id="childrenCount" value="0" min="0" required>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Total Display -->
+                                        <div class="text-center mt-4">
+                                            <h5 class="mb-0">Total Passengers: <span id="totalPassengers" class="text-primary fw-bold">1</span></h5>
+                                        </div>
+
+                                        <div class="d-grid mt-4">
+                                            <button type="submit" class="btn btn-primary btn-lg">
+                                                Select Seats <i class="bi bi-arrow-right-short"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+            </div> <!-- /end .row -->
+        </div>
+    </main>
+
+    <!-- 3. Consistent Footer -->
+    <footer class="footer mt-auto py-3 bg-dark text-white">
+        <div class="container text-center">
+            &copy; 2025 Flight Management System - CS 411
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS Bundle (includes Popper) (FIXED) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" xintegrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+    <!-- NEW SCRIPT: To calculate total passengers -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const adultsInput = document.getElementById("adultsCount");
+            const childrenInput = document.getElementById("childrenCount");
+            const totalDisplay = document.getElementById("totalPassengers");
+
+            function updateTotal() {
+                const adults = parseInt(adultsInput.value) || 0;
+                const children = parseInt(childrenInput.value) || 0;
+                const total = adults + children;
+                
+                totalDisplay.textContent = total;
+            }
+
+            adultsInput.addEventListener("input", updateTotal);
+            childrenInput.addEventListener("input", updateTotal);
+        });
+    </script>
+
+</body>
+</html>

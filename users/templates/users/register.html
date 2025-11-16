@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Flight Management System</title>
+    <!-- Bootstrap CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" xintegrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    
+    <style>
+        /* This makes the footer stick to the bottom */
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: #f8f9fa; /* Light gray background */
+        }
+        main {
+            flex-grow: 1; /* Pushes footer down */
+        }
+        /* Styling for the registration card */
+        .register-card {
+            border: 0;
+            border-radius: 1rem;
+            box-shadow: 0 0.5rem 1rem 0 rgba(0, 0, 0, 0.1);
+        }
+
+        /* Ensure invalid feedback shows for custom validation */
+        .form-control.is-invalid {
+            border-color: #dc3545;
+        }
+        .invalid-feedback {
+            display: none; /* Hide by default */
+            width: 100%;
+            margin-top: 0.25rem;
+            font-size: 0.875em;
+            color: #dc3545;
+        }
+        .was-validated .form-control:invalid ~ .invalid-feedback,
+        .form-control.is-invalid ~ .invalid-feedback {
+            display: block; /* Show when invalid */
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 1. Consistent Navbar (Header) -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                Flight Management System
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <!-- Updated links: Register is now active -->
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="login.html">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="register.html">Register</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 2. Main Page Content (This part changes per page) -->
+    <main class="py-5">
+        <div class="container">
+            <div class="row justify-content-center">
+                <!-- Centering the registration form -->
+                <div class="col-md-10 col-lg-8 col-xl-7">
+                    
+                    <div class="card register-card">
+                        <div class="card-body p-4 p-sm-5">
+                            <h3 class="card-title text-center mb-4">Create Passenger Account</h3>
+                            
+                            <!-- 
+                                Registration Form 
+                                Added id="registerForm", class="needs-validation", and novalidate
+                            -->
+                            <form id="registerForm" class="needs-validation" novalidate>
+                                <!-- First and Last Name row -->
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+                                            <input type="text" class="form-control" id="firstName" placeholder="First Name" required>
+                                            <label for="firstName">First Name</label>
+                                            <div class="invalid-feedback">
+                                                First name is required.
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+                                            <input type="text" class="form-control" id="lastName" placeholder="Last Name" required>
+                                            <label for="lastName">Last Name</label>
+                                            <div class="invalid-feedback">
+                                                Last name is required.
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Email field -->
+                                <div class="form-floating mb-3">
+                                    <input type="email" class="form-control" id="email" placeholder="name@example.com" required>
+                                    <label for="email">Email address</label>
+                                    <!-- Custom error div -->
+                                    <div class="invalid-feedback" id="emailError">
+                                        Please provide a valid email address.
+                                    </div>
+                                </div>
+
+                                <!-- Password row (Password and Confirm Password) -->
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+                                            <input type="password" class="form-control" id="password" placeholder="Password" required>
+                                            <label for="password">Password</label>
+                                            <small class="form-text text-muted">Min 8 characters (letters, numbers, symbols)</small>
+                                            <!-- Custom error div -->
+                                            <div class="invalid-feedback" id="passwordError">
+                                                Password is required.
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+                                            <input type="password" class="form-control" id="confirmPassword" placeholder="Confirm Password" required>
+                                            <label for="confirmPassword">Confirm Password</label>
+                                            <!-- Custom error div -->
+                                            <div class="invalid-feedback" id="confirmPasswordError">
+                                                Please confirm your password.
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Passport Number -->
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" id="passportNumber" placeholder="Passport Number" required>
+                                    <label for="passportNumber">Passport Number</label>
+                                    <div class="invalid-feedback">
+                                        Passport number is required.
+                                    </div>
+                                </div>
+
+                                <!-- Phone and Date of Birth row -->
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+                                            <input type="tel" class="form-control" id="phone" placeholder="Phone Number" required>
+                                            <label for="phone">Phone Number</label>
+                                            <div class="invalid-feedback">
+                                                Phone number is required.
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <!-- Using a standard input for Date of Birth for better browser compatibility -->
+                                        <div class="form-floating mb-3">
+                                            <input type="date" class="form-control" id="dob" placeholder="Date of Birth" required>
+                                            <label for="dob">Date of Birth</label>
+                                            <!-- Custom error div -->
+                                            <div class="invalid-feedback" id="dobError">
+                                                Please provide your date of birth.
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Nationality (Optional) -->
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" id="nationality" placeholder="Nationality (Optional)">
+                                    <label for="nationality">Nationality (Optional)</label>
+                                </div>
+
+                                <!-- Submit Button -->
+                                <div class="d-grid mb-3">
+                                    <button class="btn btn-primary btn-lg" type="submit">Create Account</button>
+                                </div>
+
+                                <!-- Link to Login Page -->
+                                <div class="text-center">
+                                    <a href="login.html" class="small text-decoration-none">Already have an account? Log in</a>
+                                </div>
+                            </form>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 3. Consistent Footer -->
+    <footer class="footer mt-auto py-3 bg-dark text-white">
+        <div class="container text-center">
+            &copy; 2025 Flight Management System - CS 411
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS Bundle (includes Popper) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" xintegrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+    <!-- ====== CUSTOM VALIDATION SCRIPT ====== -->
+    <script>
+        // Wait for the DOM to be fully loaded before running the script
+        document.addEventListener("DOMContentLoaded", function() {
+            
+            // Select the form
+            const form = document.getElementById("registerForm");
+            
+            // Select inputs
+            const emailInput = document.getElementById("email");
+            const passwordInput = document.getElementById("password");
+            const confirmPasswordInput = document.getElementById("confirmPassword");
+            const dobInput = document.getElementById("dob");
+
+            // Select custom error message divs
+            const emailError = document.getElementById("emailError");
+            const passwordError = document.getElementById("passwordError");
+            const confirmPasswordError = document.getElementById("confirmPasswordError");
+            const dobError = document.getElementById("dobError");
+
+
+            // --- Set Min Date for Date of Birth (Prevent Past Dates) ---
+            const today = new Date();
+            const yyyy = today.getFullYear();
+            let mm = today.getMonth() + 1; // getMonth() is zero-based
+            let dd = today.getDate();
+
+            if (dd < 10) dd = '0' + dd;
+            if (mm < 10) mm = '0' + mm;
+
+            const todayString = `${yyyy}-${mm}-${dd}`;
+            // Set the 'min' attribute to today's date.
+            // This prevents selecting any date before today.
+            dobInput.setAttribute("min", todayString);
+            // --- End of new code ---
+
+
+            // Add a submit event listener to the form
+            form.addEventListener("submit", function(event) {
+                
+                let isValid = true;
+
+                // Reset custom error messages and invalid states
+                // This ensures errors from a previous attempt are cleared
+                emailInput.classList.remove('is-invalid');
+                passwordInput.classList.remove('is-invalid');
+                confirmPasswordInput.classList.remove('is-invalid');
+                dobInput.classList.remove('is-invalid');
+
+                // --- 1. Email Validation ---
+                const emailValue = emailInput.value.trim();
+                // Regex to check for a valid email format (characters@characters.domain)
+                const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+                
+                if (emailValue === "") {
+                    emailError.textContent = "Please provide an email address.";
+                    emailInput.classList.add('is-invalid');
+                    isValid = false;
+                } else if (!emailRegex.test(emailValue)) {
+                    emailError.textContent = "Email must be in a valid format (e.g., user@example.com).";
+                    emailInput.classList.add('is-invalid');
+                    isValid = false;
+                }
+
+                // --- 2. Password Validation (Complexity) ---
+                const passwordValue = passwordInput.value;
+                const hasLetter = /[a-zA-Z]/.test(passwordValue);
+                const hasNumber = /[0-9]/.test(passwordValue);
+                const hasSymbol = /[^a-zA-Z0-9]/.test(passwordValue); // Any non-alphanumeric character
+                
+                if (passwordValue.length < 8) {
+                    passwordError.textContent = "Password must be at least 8 characters long.";
+                    passwordInput.classList.add('is-invalid');
+                    isValid = false;
+                } else if (!hasLetter || !hasNumber || !hasSymbol) {
+                    passwordError.textContent = "Password must contain letters, numbers, and symbols.";
+                    passwordInput.classList.add('is-invalid');
+                    isValid = false;
+                }
+
+                // --- 3. Confirm Password Validation (Match) ---
+                const confirmPasswordValue = confirmPasswordInput.value;
+                if (confirmPasswordValue === "") {
+                    confirmPasswordError.textContent = "Please confirm your password.";
+                    confirmPasswordInput.classList.add('is-invalid');
+                    isValid = false;
+                } else if (passwordValue !== confirmPasswordValue) {
+                    confirmPasswordError.textContent = "Passwords do not match.";
+                    confirmPasswordInput.classList.add('is-invalid');
+                    isValid = false;
+                }
+
+                // --- 4. Date of Birth Validation (Cannot be past) ---
+                // This logic is updated based on your request
+                const dobValue = dobInput.value;
+                if (dobValue === "") {
+                    dobError.textContent = "Please provide your date of birth.";
+                    dobInput.classList.add('is-invalid');
+                    isValid = false;
+                } else {
+                    const dobDate = new Date(dobValue);
+                    
+                    // 'today' was already calculated for the 'min' attribute
+                    // We need a clean 'today' variable for comparison, so we reset its time
+                    const todayComparison = new Date();
+                    todayComparison.setHours(0, 0, 0, 0); 
+                    
+                    if (dobDate < todayComparison) {
+                        dobError.textContent = "Date of Birth cannot be in the past.";
+                        dobInput.classList.add('is-invalid');
+                        isValid = false;
+                    }
+                }
+
+                // If any custom validation failed, prevent the form from submitting
+                if (!isValid) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+
+                // Add Bootstrap's 'was-validated' class.
+                // This will trigger the display of feedback for all fields,
+                // including the simple 'required' fields we didn't write custom logic for.
+                form.classList.add('was-validated');
+
+                if (isValid) {
+                    // If all validation passed, you would normally let the form submit.
+                    // For this example, we'll log a success message.
+                    // To allow submission, you would remove the event.preventDefault() call
+                    // or programmatically submit the form: form.submit();
+                    console.log("Form is valid and ready to be submitted!");
+                    
+                    // We still prevent default to show the log, remove this for actual submission
+                    event.preventDefault(); 
+                    // You could show a success alert here
+                }
+            });
+        });
+    </script>
+    <!-- ====== END CUSTOM VALIDATION SCRIPT ====== -->
+</body>
+</html>
