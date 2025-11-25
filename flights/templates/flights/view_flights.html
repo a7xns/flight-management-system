@@ -1,7 +1,177 @@
 {% extends 'base.html' %}
 
+{% block title %}View Flights - Flight Management System{% endblock %}
+
+{% block extra_css %}
+<style>
+    .table-card {
+        border: 0;
+        border-radius: 1rem;
+        box-shadow: 0 0.5rem 1rem 0 rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+    }
+    .table-header {
+        background-color: #f8f9fa;
+        border-bottom: 2px solid #e9ecef;
+    }
+    .airport-badge {
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
+<div class="container">
+    
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2><i class="bi bi-airplane me-2"></i>Flight Management</h2>
+            <p class="text-muted mb-0">View and manage all scheduled flights.</p>
+        </div>
+        <a href="{% url 'add_new_flight' %}" class="btn btn-primary">
+            <i class="bi bi-plus-lg me-1"></i> Add New Flight
+        </a>
+    </div>
 
-<h1>View flight page</h1>
+    <div class="card table-card">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-header">
+                        <tr>
+                            <th class="py-3 ps-4">Flight No.</th>
+                            <th class="py-3">Route</th>
+                            <th class="py-3">Departure</th>
+                            <th class="py-3">Arrival</th>
+                            <th class="py-3">Aircraft</th>
+                            <th class="py-3">Price (Eco)</th>
+                            <th class="py-3 pe-4 text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for flight in flights %}
+                        <tr>
+                            <td class="ps-4 fw-bold text-primary">
+                                {{ flight.flight_number }}
+                            </td>
+                            
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="text-center me-2">
+                                        <span class="badge bg-light text-dark border airport-badge">{{ flight.departure_airport.airport_code }}</span>
+                                    </div>
+                                    <i class="bi bi-arrow-right text-muted mx-1"></i>
+                                    <div class="text-center ms-2">
+                                        <span class="badge bg-light text-dark border airport-badge">{{ flight.arrival_airport.airport_code }}</span>
+                                    </div>
+                                </div>
+                                <small class="text-muted d-block mt-1">
+                                    {{ flight.departure_airport.city }} to {{ flight.arrival_airport.city }}
+                                </small>
+                            </td>
 
+                            <td>
+                                <div class="fw-bold">{{ flight.departure_datetime|date:"M d, Y" }}</div>
+                                <div class="text-muted small">{{ flight.departure_datetime|time:"H:i" }}</div>
+                            </td>
+
+                            <td>
+                                <div class="fw-bold">{{ flight.arrival_datetime|date:"M d, Y" }}</div>
+                                <div class="text-muted small">{{ flight.arrival_datetime|time:"H:i" }}</div>
+                            </td>
+
+                            <td>
+                                <span class="badge bg-info bg-opacity-10 text-info-emphasis">
+                                    {{ flight.aircraft.model }}
+                                </span>
+                            </td>
+
+                            <td>
+                                <span class="fw-bold">{{ flight.economy_price }} SAR</span>
+                            </td>
+
+                            <td class="pe-4 text-end">
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" title="Edit">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    
+                                    <button type="button" 
+                                            class="btn btn-sm btn-outline-danger" 
+                                            title="Delete"
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#deleteModal"
+                                            data-flight-number="{{ flight.flight_number }}"
+                                            data-delete-url="{% url 'delete_flight' flight.flight_number %}">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center py-5">
+                                <div class="text-muted">
+                                    <i class="bi bi-calendar-x display-4 mb-3 d-block"></i>
+                                    <h5>No flights found</h5>
+                                    <p class="mb-3">Get started by adding a new flight schedule.</p>
+                                    <a href="{% url 'add_new_flight' %}" class="btn btn-outline-primary btn-sm">Add Flight</a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title"><i class="bi bi-exclamation-triangle-fill me-2"></i>Confirm Deletion</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <p class="mb-0 fs-5">Are you sure you want to delete flight <strong id="modalFlightNumber"></strong>?</p>
+                <p class="text-muted small mt-2">This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer bg-light border-0">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                
+                <form method="POST" id="deleteForm">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Delete Flight</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // This script handles passing data from the button to the modal
+    var deleteModal = document.getElementById('deleteModal');
+    
+    deleteModal.addEventListener('show.bs.modal', function (event) {
+        // Button that triggered the modal
+        var button = event.relatedTarget;
+        
+        // Extract info from data-* attributes
+        var flightNumber = button.getAttribute('data-flight-number');
+        var deleteUrl = button.getAttribute('data-delete-url');
+        
+        // Update the modal's content
+        var modalTitle = deleteModal.querySelector('#modalFlightNumber');
+        var deleteForm = deleteModal.querySelector('#deleteForm');
+        
+        modalTitle.textContent = flightNumber;
+        deleteForm.action = deleteUrl;
+    });
+</script>
 {% endblock %}

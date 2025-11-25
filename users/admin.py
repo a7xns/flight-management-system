@@ -19,12 +19,6 @@ class PassengerProfileInline(admin.StackedInline):
     verbose_name_plural = 'Passenger Profile'
 
 
-class AdminInline(admin.StackedInline):
-
-    model = Admin
-    can_delete = False
-
-    verbose_name_plural = 'Admin'
 
 
 class UserAdmin(BaseUserAdmin):
