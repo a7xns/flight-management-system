@@ -1,9 +1,283 @@
-{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Bookings - Flight Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <style>
+        body {
+            background-color: #f8f9fa;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        /* Consistent Dashboard Card */
+        .dashboard-card {
+            border: 0;
+            border-radius: 1rem;
+            box-shadow: 0 0.5rem 1rem 0 rgba(0, 0, 0, 0.05);
+            background-color: #ffffff;
+            transition: transform 0.2s ease-in-out;
+            height: 100%; 
+        }
+        .dashboard-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0.5rem 1.5rem 0 rgba(0, 0, 0, 0.08);
+        }
+        main { flex: 1; }
 
-{% block title %}Dashboard - Flight Management System{% endblock %}
+        /* Date Box Styling */
+        .date-box {
+            background-color: #f8f9fa;
+            border-radius: 0.75rem;
+            padding: 0.5rem 0.75rem;
+            text-align: center;
+            min-width: 75px;
+            border: 1px solid #dee2e6;
+        }
+        .date-box .day {
+            font-size: 1.5rem;
+            font-weight: 700;
+            line-height: 1;
+            color: #0d6efd;
+        }
+        .date-box .month {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: #6c757d;
+        }
+        .date-box .year {
+            font-size: 0.65rem;
+            color: #adb5bd;
+        }
 
-{% block content %}
-        <h1>my bookings page</h1>
+        /* Flight Route Styling - EXPANDED */
+        .route-container {
+            position: relative;
+            text-align: center;
+            flex-grow: 1; /* Forces line to take up available space */
+            margin: 0 1.5rem; /* Spacing from text */
+        }
+        .route-line {
+            height: 2px;
+            background-color: #dee2e6;
+            width: 100%;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 1;
+        }
+        .route-icon {
+            position: relative;
+            z-index: 2;
+            background-color: #fff;
+            padding: 0 0.5rem;
+            color: #0d6efd;
+            transform: rotate(90deg);
+            font-size: 1.2rem;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
 
-{% endblock %}
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'passenger_dashboard' %}">Flight Management System</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'passenger_dashboard' %}">Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="#">My Bookings</a></li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle"></i> Profile
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{% url 'profile' %}">View Profile</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="{% url 'logout' %}">Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
 
+    <main class="py-5">
+        <div class="container">
+            
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>My Bookings</h2>
+                <a href="{% url 'passenger_dashboard' %}" class="btn btn-outline-primary">
+                    <i class="bi bi-plus-lg me-2"></i>Book New Flight
+                </a>
+            </div>
+
+            <ul class="nav nav-pills mb-4" id="pills-tab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active rounded-pill px-4" id="pills-upcoming-tab" data-bs-toggle="pill" data-bs-target="#pills-upcoming" type="button" role="tab">Upcoming</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link rounded-pill px-4" id="pills-past-tab" data-bs-toggle="pill" data-bs-target="#pills-past" type="button" role="tab">Past Flights</button>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="pills-tabContent">
+                
+                <div class="tab-pane fade show active" id="pills-upcoming" role="tabpanel">
+                    
+                    <div class="row row-cols-1 row-cols-lg-2 g-4">
+
+                        <div class="col">
+                            <div class="card dashboard-card">
+                                <div class="card-body p-3"> 
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        
+                                        <div class="date-box flex-shrink-0">
+                                            <div class="month">Nov</div>
+                                            <div class="day">20</div>
+                                            <div class="year">2025</div>
+                                        </div>
+
+                                        <div class="d-flex align-items-center flex-grow-1 px-3">
+                                            <div class="text-center flex-shrink-0">
+                                                <span class="h5 fw-bold mb-0 d-block">DMM</span>
+                                                <small class="text-muted" style="font-size: 0.75rem;">08:00</small>
+                                            </div>
+                                            
+                                            <div class="route-container d-none d-sm-block">
+                                                <div class="route-line"></div>
+                                                <i class="bi bi-airplane-fill route-icon"></i>
+                                            </div>
+                                            <div class="d-block d-sm-none mx-auto text-muted px-2"><i class="bi bi-arrow-right"></i></div>
+                                            
+                                            <div class="text-center flex-shrink-0">
+                                                <span class="h5 fw-bold mb-0 d-block">LHR</span>
+                                                <small class="text-muted" style="font-size: 0.75rem;">12:30</small>
+                                            </div>
+                                        </div>
+
+                                        <div class="flex-shrink-0">
+                                            <a href="{% url 'booking_details' 789 %}" class="btn btn-primary">
+                                                Details
+                                            </a>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col">
+                            <div class="card dashboard-card">
+                                <div class="card-body p-3">
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        
+                                        <div class="date-box flex-shrink-0">
+                                            <div class="month">Dec</div>
+                                            <div class="day">05</div>
+                                            <div class="year">2025</div>
+                                        </div>
+
+                                        <div class="d-flex align-items-center flex-grow-1 px-3">
+                                            <div class="text-center flex-shrink-0">
+                                                <span class="h5 fw-bold mb-0 d-block">JED</span>
+                                                <small class="text-muted" style="font-size: 0.75rem;">14:00</small>
+                                            </div>
+                                            
+                                            <div class="route-container d-none d-sm-block">
+                                                <div class="route-line"></div>
+                                                <i class="bi bi-airplane-fill route-icon"></i>
+                                            </div>
+                                            <div class="d-block d-sm-none mx-auto text-muted px-2"><i class="bi bi-arrow-right"></i></div>
+                                            
+                                            <div class="text-center flex-shrink-0">
+                                                <span class="h5 fw-bold mb-0 d-block">DXB</span>
+                                                <small class="text-muted" style="font-size: 0.75rem;">16:15</small>
+                                            </div>
+                                        </div>
+
+                                        <div class="flex-shrink-0">
+                                            <a href="#" class="btn btn-primary">
+                                                Details
+                                            </a>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col">
+                            <div class="card dashboard-card">
+                                <div class="card-body p-3">
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        
+                                        <div class="date-box flex-shrink-0">
+                                            <div class="month">Jan</div>
+                                            <div class="day">12</div>
+                                            <div class="year">2026</div>
+                                        </div>
+
+                                        <div class="d-flex align-items-center flex-grow-1 px-3">
+                                            <div class="text-center flex-shrink-0">
+                                                <span class="h5 fw-bold mb-0 d-block">RUH</span>
+                                                <small class="text-muted" style="font-size: 0.75rem;">09:30</small>
+                                            </div>
+                                            
+                                            <div class="route-container d-none d-sm-block">
+                                                <div class="route-line"></div>
+                                                <i class="bi bi-airplane-fill route-icon"></i>
+                                            </div>
+                                            <div class="d-block d-sm-none mx-auto text-muted px-2"><i class="bi bi-arrow-right"></i></div>
+                                            
+                                            <div class="text-center flex-shrink-0">
+                                                <span class="h5 fw-bold mb-0 d-block">CAI</span>
+                                                <small class="text-muted" style="font-size: 0.75rem;">11:45</small>
+                                            </div>
+                                        </div>
+
+                                        <div class="flex-shrink-0">
+                                            <a href="#" class="btn btn-primary">
+                                                Details
+                                            </a>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div> </div>
+
+                <div class="tab-pane fade" id="pills-past" role="tabpanel">
+                    <div class="text-center py-5">
+                        <div class="mb-3 text-muted">
+                            <i class="bi bi-clock-history" style="font-size: 3rem; opacity: 0.5;"></i>
+                        </div>
+                        <h5 class="text-muted">No past flights found</h5>
+                        <p class="text-muted small">Your flight history will appear here once you complete a trip.</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer mt-auto py-3 bg-dark text-white">
+        <div class="container text-center">
+            &copy; 2025 Flight Management System - CS 411
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

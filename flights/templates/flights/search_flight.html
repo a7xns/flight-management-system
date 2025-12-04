@@ -1,0 +1,172 @@
+{% extends 'base.html' %}
+
+{% block title %}Search Results{% endblock %}
+
+{% block extra_css %}
+<style>
+    .filter-card {
+        border: 0;
+        border-radius: 1rem;
+        box-shadow: 0 0.5rem 1rem 0 rgba(0, 0, 0, 0.05);
+        background-color: #fff;
+    }
+    .flight-card {
+        border: 0;
+        border-radius: 1rem;
+        box-shadow: 0 0.5rem 1rem 0 rgba(0, 0, 0, 0.05);
+        background-color: #ffffff;
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+    .flight-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 0.75rem 1.5rem 0 rgba(0, 0, 0, 0.07);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    
+    <div class="mb-4">
+        <a href="{% url 'passenger_dashboard' %}" class="text-decoration-none text-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Dashboard
+        </a>
+        <div class="d-flex justify-content-between align-items-end mt-3">
+            <div>
+                <h2 class="mb-0">Flight Results</h2>
+                <p class="text-muted lead mb-0">
+                    Showing flights from <strong>{{ departure_city }} ({{ departure_code }})</strong> 
+                    to <strong>{{ destination_city }} ({{ destination_code }})</strong> 
+                </p>
+                <small class="text-muted">
+                    Date: {{ date_from }} to {{ date_to }}
+                </small>
+            </div>
+            <span class="badge bg-primary rounded-pill px-3 py-2 fs-6">{{ result_count }} results</span>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        
+        <div class="col-lg-3">
+            <div class="card filter-card sticky-top" style="top: 2rem; z-index: 1;">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="card-title mb-0"><i class="bi bi-sliders me-2"></i>Filters</h5>
+                        <a href="{% url 'search_flight' %}?origin={{ departure_code }}&destination={{ destination_code }}&date_from={{ date_from }}&date_to={{ date_to }}" class="text-decoration-none small">Reset</a>
+                    </div>
+                    
+                    <form method="get">
+                        
+                        <input type="hidden" name="origin" value="{{ departure_code }}">
+                        <input type="hidden" name="destination" value="{{ destination_code }}">
+                        <input type="hidden" name="date_from" value="{{ date_from }}">
+                        <input type="hidden" name="date_to" value="{{ date_to }}">
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-muted small text-uppercase">Price Range</label>
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <input type="number" name="min_price" class="form-control form-control-sm" placeholder="Min" min="0" value="{{ min_price|default:'' }}">
+                                </div>
+                                <div class="col-6">
+                                    <input type="number" name="max_price" class="form-control form-control-sm" placeholder="Max" min="0" value="{{ max_price|default:'' }}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-muted small text-uppercase">Cabin Class</label>
+                            <select name="cabin_class" class="form-select form-select-sm">
+                                <option value="economy" {% if cabin_class == 'economy' %}selected{% endif %}>Economy</option>
+                                <option value="business" {% if cabin_class == 'business' %}selected{% endif %}>Business</option>
+                                <option value="first" {% if cabin_class == 'first' %}selected{% endif %}>First Class</option>
+                            </select>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">Apply Filters</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-9">
+            <div class="row g-4">
+                {% for flight in flights %}
+                <div class="col-12">
+                    <div class="card border-0 shadow-sm rounded-4 hover-shadow transition flight-card">
+                        <div class="card-body p-4">
+                            <div class="row align-items-center">
+                                
+                                <div class="col-md-3 text-center text-md-start">
+                                    <div class="text-muted small text-uppercase mb-1">Departure</div>
+                                    <h3 class="mb-0">{{ flight.departure_datetime|time:"H:i" }}</h3>
+                                    <div class="fw-bold text-primary">{{ flight.departure_airport.city }}</div>
+                                    <small class="text-muted">{{ flight.departure_airport.airport_code }}</small>
+                                    <div class="small text-muted mt-1">{{ flight.departure_datetime|date:"M d, Y" }}</div>
+                                </div>
+
+                                <div class="col-md-2 text-center my-3 my-md-0">
+                                    <div class="text-muted small mb-1">Direct</div>
+                                    <div class="d-flex align-items-center justify-content-center text-muted">
+                                        <i class="bi bi-circle-fill" style="font-size: 6px;"></i>
+                                        <hr class="flex-grow-1 mx-2 my-0 border-top border-2">
+                                        <i class="bi bi-airplane-fill" style="transform: rotate(90deg);"></i>
+                                        <hr class="flex-grow-1 mx-2 my-0 border-top border-2">
+                                        <i class="bi bi-circle-fill" style="font-size: 6px;"></i>
+                                    </div>
+                                    <small class="text-muted d-block mt-1">{{ flight.flight_number }}</small>
+                                </div>
+
+                                <div class="col-md-3 text-center text-md-end">
+                                    <div class="text-muted small text-uppercase mb-1">Arrival</div>
+                                    <h3 class="mb-0">{{ flight.arrival_datetime|time:"H:i" }}</h3>
+                                    <div class="fw-bold text-primary">{{ flight.arrival_airport.city }}</div>
+                                    <small class="text-muted">{{ flight.arrival_airport.airport_code }}</small>
+                                    <div class="small text-muted mt-1">{{ flight.arrival_datetime|date:"M d, Y" }}</div>
+                                </div>
+
+                                <div class="col-md-4 text-center border-start ps-md-4 mt-4 mt-md-0">
+                                    <div class="d-flex justify-content-center justify-content-md-end align-items-center mb-2">
+                                        <span class="text-muted me-2 text-capitalize">{{ cabin_class }}</span>
+                                        
+                                        <h3 class="mb-0 text-success">
+                                            {% if cabin_class == 'business' %}
+                                                {{ flight.business_price }}
+                                            {% elif cabin_class == 'first' %}
+                                                {{ flight.first_class_price }}
+                                            {% else %}
+                                                {{ flight.economy_price }}
+                                            {% endif %}
+                                            SAR
+                                        </h3>
+                                    </div>
+                                    <div class="d-grid">
+                                        <a href="#" class="btn btn-primary btn-lg">Select Flight</a>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12">
+                    <div class="card border-0 bg-light p-5 text-center rounded-4">
+                        <div class="card-body">
+                            <i class="bi bi-search display-1 text-muted opacity-25 mb-3"></i>
+                            <h3>No flights found</h3>
+                            <p class="text-muted">We couldn't find any flights matching your criteria.</p>
+                            <a href="{% url 'passenger_dashboard' %}" class="btn btn-outline-primary mt-2">New Search</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+    </div>
+</div>
+{% endblock %}

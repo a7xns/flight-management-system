@@ -15,43 +15,39 @@
                 <div class="card-body p-4 p-sm-5">
                     <h4 class="card-title mb-4"><i class="bi bi-airplane-engines me-2"></i> Find a Flight</h4>
                     
-                    <form action="#" method="get">
+                    <form action="{% url 'search_flight' %}" method="get">
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="departsFrom" class="form-label">Departs from</label>
-                                <select class="form-select form-select-lg" id="departsFrom" required>
+                                <label for="departsFrom" class="form-label">Departure</label>
+                                
+                                <select class="form-select form-select-lg" id="departsFrom" name="origin" required>
                                     <option value="" disabled selected>Select origin</option>
-                                    <option value="DMM">Dammam (DMM)</option>
-                                    <option value="RUH">Riyadh (RUH)</option>
-                                    <option value="JED">Jeddah (JED)</option>
-                                    <option value="MED">Medina (MED)</option>
-                                    <option value="AHB">Abha (AHB)</option>
-                                    <option value="DXB">Dubai (DXB)</option>
-                                    <option value="CAI">Cairo (CAI)</option>
-                                    <option value="LHR">London (LHR)</option>
-                                    <option value="JFK">New York (JFK)</option>
+                                    {% for airport in airports %}
+                                        <option value="{{ airport.airport_code }}">{{ airport.city }} ({{ airport.airport_code }})</option>
+                                    {% endfor %}
                                 </select>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="destination" class="form-label">Destination</label>
-                                <select class="form-select form-select-lg" id="destination" required>
+                                
+                                <select class="form-select form-select-lg" id="destination" name="destination" required>
                                     <option value="" disabled selected>Select destination</option>
-                                    <option value="DMM">Dammam (DMM)</option>
-                                    <option value="RUH">Riyadh (RUH)</option>
-                                    <option value="JED">Jeddah (JED)</option>
-                                    <option value="MED">Medina (MED)</option>
-                                    <option value="AHB">Abha (AHB)</option>
-                                    <option value="DXB">Dubai (DXB)</option>
-                                    <option value="CAI">Cairo (CAI)</option>
-                                    <option value="LHR">London (LHR)</option>
-                                    <option value="JFK">New York (JFK)</option>
+                                    {% for airport in airports %}
+                                        <option value="{{ airport.airport_code }}">{{ airport.city }} ({{ airport.airport_code }})</option>
+                                    {% endfor %}
                                 </select>
                             </div>
                         </div>
                         
-                        <div class="mb-3">
-                            <label for="flightDate" class="form-label">Date of flight</label>
-                            <input type="date" class="form-control form-control-lg" id="flightDate" required>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="dateFrom" class="form-label">From Date</label>
+                                <input type="date" class="form-control form-control-lg" id="dateFrom" name="date_from" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="dateTo" class="form-label">To Date</label>
+                                <input type="date" class="form-control form-control-lg" id="dateTo" name="date_to" required>
+                            </div>
                         </div>
 
                         <div class="d-grid mt-4">

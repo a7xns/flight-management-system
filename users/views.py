@@ -6,7 +6,9 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from .forms import PassengerCreationForm, EmailAuthenticationForm
 from .models import PassengerProfile, Admin
-from bookings.models import Booking
+from flights.models import Airport
+
+
 
 def passenger_register(request: HttpRequest) -> HttpResponse:
 
@@ -76,21 +78,9 @@ def passenger_dashboard(request):
     passenger = None
     bookings = None
 
-    # ------------------- ! NOT TESTED ! -------------------
-    if request.method == 'POST':
-        passport = request.POST.get('passport_number')
-        try:
-            passenger = PassengerProfile.objects.get(passport=passport, user=request.user)
-            bookings = Booking.objects.filter(passenger=passenger)
-        except PassengerProfile.DoesNotExist:
-            passenger = None
-            bookings = None
+    airports = Airport.objects.all().order_by('city')
 
-    return render(request, 'users/passenger_dashboard.html', {
-        'passenger': passenger,
-        'bookings': bookings,
-    })
-    # ------------------- ! NOT TESTED ! -------------------
+    return render(request, 'users/passenger_dashboard.html', context={'airports': airports})
 
 
 @login_required

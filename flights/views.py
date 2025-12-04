@@ -76,6 +76,11 @@ def search_flight(request):
     date_from_str = request.GET.get('date_from')
     date_to_str = request.GET.get('date_to')
 
+    cabin_class = request.GET.get('cabin_class', 'economy')
+    min_price = request.GET.get('min_price')
+    max_price = request.GET.get('max_price')
+
+
     flights = []
 
     departure_city = 'Unknown'
@@ -92,8 +97,31 @@ def search_flight(request):
                 departure_airport__airport_code=departure_code,
                 arrival_airport__airport_code=destination_code,
                 departure_datetime__date__range=[search_date_from, search_date_to]
-            ).order_by('departure_datetime')
+            )
 
+
+            if min_price:
+                if cabin_class == 'business':
+                    flights = flights.filter(business_price__gte = min_price)
+
+                elif cabin_class == 'first':
+                    flights = flights.filter(first_class_price__gte = min_price)
+
+                else:
+                    flights = flights.filter(economy_price__gte=min_price)
+
+            if max_price:
+                if cabin_class == 'business':
+                    flights = flights.filter(business_price__lte = max_price)
+
+                elif cabin_class == 'first':
+                    flights = flights.filter(first_class_price__lte = max_price)
+
+                else:
+                    flights = flights.filter(economy_price__lte=max_price)
+
+
+            flights = flights.order_by('departure_datetime')
 
             if flights.exists():
                 departure_city = flights[0].departure_airport.city
@@ -115,6 +143,9 @@ def search_flight(request):
         'flights': flights,
         'departure_code': departure_code,
         'destination_code': destination_code,
+        'cabin_class': cabin_class,
+        'min_price': min_price,
+        'max_price': max_price,
         'departure_city': departure_city,
         'destination_city': destination_city,
         'date_from': date_from_str,
