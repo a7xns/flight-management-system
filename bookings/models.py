@@ -3,6 +3,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 
 class Booking(models.Model):
+    
     STATUS_CHOICES = [
         ('Confirmed', 'Confirmed'),
         ('Pending', 'Pending'),
@@ -51,7 +52,7 @@ class Ticket(models.Model):
         validators=[RegexValidator(r'^\d+[A-Za-z]+$', 'Invalid seat number format')]
     )
     passenger_name = models.CharField(max_length=100)
-    passport = models.CharField(max_length=20, unique=True)
+    passport = models.CharField(max_length=20)
     passenger_dob = models.DateField()
     nationality = models.CharField(max_length=50)
     booking = models.ForeignKey('Booking', on_delete=models.CASCADE, related_name='tickets')

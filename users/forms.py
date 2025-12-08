@@ -15,6 +15,8 @@ from django.contrib.auth.models import User
 from .models import PassengerProfile
 from datetime import date
 
+import re
+
 
 class PassengerCreationForm(UserCreationForm):
     """
@@ -59,6 +61,21 @@ class PassengerCreationForm(UserCreationForm):
         self.fields['password1'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Password'})
         self.fields['password2'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Confirm Password'})
 
+    def clean_nationality(self):
+
+        nid = self.cleaned_data.get('nationality')
+
+        if not re.match(r'^\d{10}$', nid):
+            raise forms.ValidationError("National ID must be exactly 10 numbers.")
+        return nid
+
+    def clean_passport(self):
+        passport = self.cleaned_data.get('passport')
+        if passport:
+
+            if not re.match(r'^[A-Za-z0-9]{9}$', passport):
+                raise forms.ValidationError("Passport must be exactly 9 alphanumeric characters.")
+        return passport
 
     def clean_date_of_birth(self):
         """

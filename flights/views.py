@@ -1,10 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpRequest, HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .forms import NewFlightForm
-from .models import Flight, Airport
+from .models import *
 from datetime import datetime
+
 
 # Create your views here.
 
@@ -155,3 +155,14 @@ def search_flight(request):
 
 
     return render(request, 'flights/search_flight.html', context)
+
+
+@login_required
+def flight_details(request, flight_id):
+
+
+    flight = get_object_or_404(Flight, flight_number=flight_id)
+
+
+    return render(request, 'flights/flight_details.html', {'flight': flight})
+
