@@ -199,3 +199,4 @@ def download_ticket_pdf(request, booking_id):
         return HttpResponse('We had some errors <pre>' + html + '</pre>')
         
     return response
+

@@ -60,4 +60,39 @@ class NewFlightForm(forms.ModelForm):
         
         return cleaned_data
     
-    
+
+class FlightForm(forms.ModelForm):
+    class Meta:
+        model = Flight
+        fields = [
+            'flight_number', 'aircraft', 'departure_airport', 'arrival_airport',
+            'departure_datetime', 'arrival_datetime', 'economy_price',
+            'business_price', 'first_class_price', 'status'
+        ]
+        widgets = {
+            'departure_datetime': forms.DateTimeInput(attrs={'class': 'form-control', 'type': 'datetime-local'}),
+            'arrival_datetime': forms.DateTimeInput(attrs={'class': 'form-control', 'type': 'datetime-local'}),
+            'flight_number': forms.TextInput(attrs={'class': 'form-control'}),
+            'economy_price': forms.NumberInput(attrs={'class': 'form-control'}),
+            'business_price': forms.NumberInput(attrs={'class': 'form-control'}),
+            'first_class_price': forms.NumberInput(attrs={'class': 'form-control'}),
+            'aircraft': forms.Select(attrs={'class': 'form-select'}),
+            'departure_airport': forms.Select(attrs={'class': 'form-select'}),
+            'arrival_airport': forms.Select(attrs={'class': 'form-select'}),
+            'status': forms.Select(attrs={'class': 'form-select'}),
+        }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        dep = cleaned_data.get('departure_datetime')
+        arr = cleaned_data.get('arrival_datetime')
+        dep_airport = cleaned_data.get('departure_airport')
+        arr_airport = cleaned_data.get('arrival_airport')
+
+        if dep and arr and arr < dep:
+            raise forms.ValidationError("Arrival time cannot be before departure time.")
+            
+        if dep_airport and arr_airport and dep_airport == arr_airport:
+            raise forms.ValidationError("Departure and Arrival airports cannot be the same.")
+            
+        return cleaned_data

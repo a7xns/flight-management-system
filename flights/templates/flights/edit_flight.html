@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Flight {{ flight.flight_number }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-header bg-white border-0 pt-4 px-4 d-flex justify-content-between align-items-center">
+                    <div>
+                        <h4 class="mb-1 text-primary">Edit Flight Details</h4>
+                        <p class="text-muted small mb-0">Update schedule, aircraft, or pricing for this flight.</p>
+                    </div>
+                    <span class="badge bg-secondary fs-6">{{ flight.flight_number }}</span>
+                </div>
+                
+                <div class="card-body p-4">
+                    <form method="POST">
+                        {% csrf_token %}
+                        
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger rounded-3">
+                                <i class="bi bi-exclamation-circle-fill me-2"></i>
+                                {{ form.non_field_errors|join:", " }}
+                            </div>
+                        {% endif %}
+
+                        <h6 class="text-muted text-uppercase fw-bold small mb-3">Route Information</h6>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold small">Flight Number</label>
+                                {{ form.flight_number }}
+                                <div class="text-danger small">{{ form.flight_number.errors.0 }}</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold small">Aircraft</label>
+                                {{ form.aircraft }}
+                                <div class="text-danger small">{{ form.aircraft.errors.0 }}</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold small">Departure Airport</label>
+                                {{ form.departure_airport }}
+                                <div class="text-danger small">{{ form.departure_airport.errors.0 }}</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold small">Arrival Airport</label>
+                                {{ form.arrival_airport }}
+                                <div class="text-danger small">{{ form.arrival_airport.errors.0 }}</div>
+                            </div>
+                        </div>
+
+                        <hr class="text-muted opacity-25">
+
+                        <h6 class="text-muted text-uppercase fw-bold small mb-3 mt-4">Schedule & Status</h6>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold small">Departure Time</label>
+                                {{ form.departure_datetime }}
+                                <div class="text-danger small">{{ form.departure_datetime.errors.0 }}</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold small">Arrival Time</label>
+                                {{ form.arrival_datetime }}
+                                <div class="text-danger small">{{ form.arrival_datetime.errors.0 }}</div>
+                            </div>
+                            
+                            {% if form.status %}
+                            <div class="col-12">
+                                <label class="form-label fw-bold small">Current Status</label>
+                                {{ form.status }}
+                                <div class="text-danger small">{{ form.status.errors.0 }}</div>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <hr class="text-muted opacity-25">
+
+                        <h6 class="text-muted text-uppercase fw-bold small mb-3 mt-4">Ticket Pricing (SAR)</h6>
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold small text-success">Economy Class</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0">SAR</span>
+                                    {{ form.economy_price }}
+                                </div>
+                                <div class="text-danger small">{{ form.economy_price.errors.0 }}</div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold small text-primary">Business Class</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0">SAR</span>
+                                    {{ form.business_price }}
+                                </div>
+                                <div class="text-danger small">{{ form.business_price.errors.0 }}</div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold small text-warning">First Class</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0">SAR</span>
+                                    {{ form.first_class_price }}
+                                </div>
+                                <div class="text-danger small">{{ form.first_class_price.errors.0 }}</div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2 mt-5">
+                            <a href="{% url 'view_flights' %}" class="btn btn-light border px-4">Cancel</a>
+                            <button type="submit" class="btn btn-primary px-4">
+                                <i class="bi bi-save me-2"></i>Update Flight
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

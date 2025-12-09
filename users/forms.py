@@ -155,3 +155,43 @@ class EmailAuthenticationForm(AuthenticationForm):
                 self.add_error('username', 'Invalid email or password.')
         
         return self.cleaned_data
+
+
+class UserUpdateForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'email']
+        widgets = {
+            'first_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter first name'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter last name'}),
+            # Email is readonly
+            'email': forms.EmailInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
+        }
+
+class ProfileUpdateForm(forms.ModelForm):
+    class Meta:
+        model = PassengerProfile
+        fields = ['phone_number', 'date_of_birth', 'nationality', 'passport']
+        labels = {
+            'nationality': 'National ID / Iqama',
+            'passport': 'Passport Number'
+        }
+        widgets = {
+            'phone_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '05XXXXXXXX'}),
+            'date_of_birth': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'nationality': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '10-digit ID'}),
+            'passport': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Passport Number'}),
+        }
+
+    # --- Validation Logic ---
+    def clean_nationality(self):
+        nid = self.cleaned_data.get('nationality')
+        if nid and not re.match(r'^\d{10}$', nid):
+            raise forms.ValidationError("National ID must be exactly 10 numbers.")
+        return nid
+
+    def clean_passport(self):
+        passport = self.cleaned_data.get('passport')
+        if passport and not re.match(r'^[A-Za-z0-9]{6,15}$', passport):
+            raise forms.ValidationError("Invalid passport format.")
+        return passport

@@ -1,5 +1,7 @@
 from django.db import models
 from django.core.exceptions import ValidationError
+from bookings.models import Booking
+
 
 class Airport(models.Model):
     airport_code = models.CharField(primary_key=True, max_length=3)
@@ -29,6 +31,7 @@ class Aircraft(models.Model):
 
 
 class Flight(models.Model):
+
     flight_number = models.CharField(primary_key=True, max_length=10)
     departure_datetime = models.DateTimeField()
     arrival_datetime = models.DateTimeField()
@@ -38,9 +41,16 @@ class Flight(models.Model):
     departure_airport = models.ForeignKey(Airport, on_delete=models.PROTECT, related_name='departing_flights')
     arrival_airport = models.ForeignKey(Airport, on_delete=models.PROTECT, related_name='arriving_flights')
     aircraft = models.ForeignKey(Aircraft, on_delete=models.PROTECT)
+    status = models.CharField(max_length=20, default='Scheduled', choices=[
+        ('Scheduled', 'Scheduled'),
+        ('Delayed', 'Delayed'),
+        ('Cancelled', 'Cancelled'),
+        ('Landed', 'Landed'),
+    ])
+
 
     def available_seats_dynamic(self):
-        from bookings.models import Booking
+
         booked_economy = Booking.objects.filter(flight=self, seat_class='Economy').count()
         booked_business = Booking.objects.filter(flight=self, seat_class='Business').count()
         booked_first_class = Booking.objects.filter(flight=self, seat_class='First').count()
@@ -49,6 +59,7 @@ class Flight(models.Model):
         return total_seats - booked_seats
 
     def flight_time(self):
+
         if self.departure_datetime and self.arrival_datetime:
             diff = self.arrival_datetime - self.departure_datetime
             total_seconds = diff.total_seconds()
@@ -58,6 +69,7 @@ class Flight(models.Model):
         return None
 
     def check_flight(self):
+
         if self.departure_datetime >= self.arrival_datetime:
             raise ValidationError("Departure time must be before arrival time.")
         if self.departure_airport == self.arrival_airport:

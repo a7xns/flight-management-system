@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
-from .forms import NewFlightForm
+from .forms import *
 from .models import *
 from datetime import datetime
 
@@ -166,3 +166,33 @@ def flight_details(request, flight_id):
 
     return render(request, 'flights/flight_details.html', {'flight': flight})
 
+
+def is_admin(user):
+    return user.is_superuser or user.is_staff
+
+@login_required
+@user_passes_test(is_admin)
+def edit_flight(request, flight_id):
+    """
+    Allows admin to edit an existing flight.
+    Args:
+        flight_id (str): The flight number (e.g., 'SV2010') passed from the URL.
+    """
+    # 1. Fetch the flight using flight_number (handles 'SV2010')
+    flight = get_object_or_404(Flight, flight_number=flight_id)
+    
+    # 2. Handle Form Submission
+    if request.method == 'POST':
+        form = FlightForm(request.POST, instance=flight)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f"Flight {flight.flight_number} updated successfully!")
+            return redirect('view_flights') # Ensure this matches your URL name in urls.py
+        else:
+            messages.error(request, "Please correct the errors below.")
+    
+    # 3. Handle Initial Page Load (Pre-fill form)
+    else:
+        form = FlightForm(instance=flight)
+    
+    return render(request, 'flights/edit_flight.html', {'form': form, 'flight': flight})
