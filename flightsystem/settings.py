@@ -141,3 +141,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MESSAGE_TAGS = {
     messages.ERROR: 'danger', # tells django to consider 'danger' (for bootstrap) as an error
 }
+
+# Print emails to the console instead of sending them (for development)
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
