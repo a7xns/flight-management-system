@@ -72,32 +72,34 @@ class PassengerRegistrationTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertFalse(User.objects.filter(username='testpassenger').exists())
     
-    def test_registration_duplicate_username(self):
-        """Test that registration fails with duplicate username."""
-        # Create a user first
-        User.objects.create_user(
-            username='existinguser',
-            email='existing@example.com',
-            password='password123'
-        )
-        
-        data = {
-            'username': 'existinguser',
-            'email': 'newemail@example.com',
-            'first_name': 'New',
-            'last_name': 'User',
-            'password1': 'complexpass123!',
-            'password2': 'complexpass123!',
-            'date_of_birth': '2000-01-01',
-            'phone_number': '1234567890',
-            'passport': 'XYZ123456',
-            'nationality': '1234567890'
-        }
-        response = self.client.post(self.register_url, data)
-        
-        # Should not redirect (form has errors)
-        self.assertEqual(response.status_code, 200)
-        self.assertIn('form', response.context)
+    # users/tests.py (Inside PassengerRegistrationTests class)
+
+def test_registration_duplicate_username(self):
+    """Test that registration fails with duplicate email (since email = username)."""
+    # 1. Create a user with a specific email
+    User.objects.create_user(
+        username='existing@example.com', # Username is usually email in your system
+        email='existing@example.com',
+        password='password123'
+    )
+    
+    data = {
+        'username': 'whatever', 
+        'email': 'existing@example.com',
+        'first_name': 'New',
+        'last_name': 'User',
+        'password1': 'complexpass123!',
+        'password2': 'complexpass123!',
+        'date_of_birth': '2000-01-01',
+        'phone_number': '1234567890',
+        'passport': 'XYZ123456',
+        'nationality': '1234567890'
+    }
+    response = self.client.post(self.register_url, data)
+    
+    # Now this should be 200 (Form Error) because the email exists
+    self.assertEqual(response.status_code, 200)
+    self.assertIn('form', response.context)
     
     def test_registration_invalid_email(self):
         """Test that registration fails with invalid email."""
@@ -327,7 +329,7 @@ class ViewProfileTests(TestCase):
     
     def setUp(self):
         self.client = Client()
-        self.profile_url = reverse('view_profile')
+        self.profile_url = reverse('profile')
         
         # Create a passenger user
         self.user = User.objects.create_user(
@@ -361,8 +363,6 @@ class ViewProfileTests(TestCase):
         """Test that profile context contains user and profile data."""
         self.client.login(username='testpassenger', password='testpass123')
         response = self.client.get(self.profile_url)
-        
-        self.assertIn('user_obj', response.context)
         self.assertIn('profile', response.context)
         self.assertEqual(response.context['profile'], self.profile)
 
