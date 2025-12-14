@@ -8,9 +8,10 @@ from flights.models import Flight
 from users.models import PassengerProfile
 from .forms import *
 from django.template.loader import get_template
+from django.utils import timezone
 
 from xhtml2pdf import pisa
-
+import math
 
 # Create your views here.
 
@@ -23,43 +24,58 @@ def my_bookings(request):
 
 
 @login_required
-def seat_selection(request):
+def seat_selection(request, flight_id, seat_class):
+    flight = get_object_or_404(Flight, flight_number=flight_id)
+    aircraft = flight.aircraft
 
-    flight_id = request.GET.get('flight_id')
-    seat_class = request.GET.get('seat_class', 'Economy')
 
-
-    if not flight_id:
-        return redirect('passenger-dashboard')
-    
-
+    # 1. Get Passenger Counts
     try:
-
-        adult = int(request.GET.get('adults', 1))
+        adults = int(request.GET.get('adults', 1))
         children = int(request.GET.get('children', 0))
     except ValueError:
-        adult = 10
-        children = 2
+        adults = 1
+        children = 0
+    total_passengers = adults + children
 
-    total_passengers = adult + children
+    # 2. Get Taken Seats
+    taken_seats = list(Ticket.objects.filter(booking__flight=flight).values_list('seat_number', flat=True))
+
+    # 3. Calculate Rows
+    seats_per_row = 6
+    
+    first_rows_count = math.ceil(aircraft.first_class / seats_per_row)
+    bus_rows_count = math.ceil(aircraft.business_class / seats_per_row)
+    eco_rows_count = math.ceil(aircraft.economy_class / seats_per_row)
 
 
-    flight = get_object_or_404(Flight, flight_number=flight_id)
+    # Define Row Ranges
+    first_start = 1
+    first_end = first_rows_count
+    
+    bus_start = first_end + 1
+    bus_end = first_end + bus_rows_count
+    
+    eco_start = bus_end + 1
+    eco_end = bus_end + eco_rows_count
 
-    taken_seats_list = list(
-        Ticket.objects.filter(booking__flight=flight)
-        .exclude(booking__status='Cancelled')
-        .values_list('seat_number', flat=True)
-    )
-
+    # Generate ranges (Python range is exclusive at the end, so we add +1)
+    first_range = range(first_start, first_end + 1) if first_rows_count > 0 else None
+    bus_range = range(bus_start, bus_end + 1) if bus_rows_count > 0 else None
+    eco_range = range(eco_start, eco_end + 1) if eco_rows_count > 0 else None
 
     context = {
         'flight': flight,
+        'first_range': first_range,
+        'bus_range': bus_range,
+        'eco_range': eco_range,
+        'taken_seats': taken_seats,
         'total_passengers': total_passengers,
-        'taken_seats': taken_seats_list,
-        'row_range': range(1, 21),
-        'seat_class': seat_class
+        'seat_class': seat_class,
     }
+    
+    request.session['adults'] = adults
+    request.session['children'] = children
 
     return render(request, 'bookings/seat_selection.html', context)
 
@@ -184,13 +200,63 @@ def create_booking(request):
 @login_required
 def booking_details(request, booking_id):
     """
-    Displays the final Booking Confirmation / Receipt.
-    This is where the user lands after a successful payment.
+    Show details of a specific booking and list its tickets.
     """
+    try:
+        passenger = request.user.passenger_profile
+        booking = get_object_or_404(Booking, booking_id=booking_id, passenger=passenger)
+        
+        tickets = Ticket.objects.filter(booking=booking)
+        
+        context = {
+            'booking': booking,
+            'tickets': tickets
+        }
+        return render(request, 'bookings/booking_details.html', context)
+        
+    except PassengerProfile.DoesNotExist:
+        messages.error(request, "Profile error.")
+        return redirect('passenger_dashboard')
 
-    booking = get_object_or_404(Booking, booking_id=booking_id, passenger__user=request.user)
+@login_required
+def cancel_ticket(request, ticket_id):
+    """
+    Cancel a specific ticket. If it's the last ticket, cancel the booking.
+    """
+    try:
+        passenger = request.user.passenger_profile
+        ticket = get_object_or_404(Ticket, ticket_id=ticket_id, booking__passenger=passenger)
+        booking = ticket.booking
+        
+        if booking.status == 'Cancelled':
+            messages.warning(request, "This booking is already cancelled.")
+            return redirect('booking_details', booking_id=booking.booking_id)
+
+        # Check if flight has passed
+        if booking.flight.departure_datetime < timezone.now():
+            messages.error(request, "Cannot cancel a ticket for a past flight.")
+            return redirect('booking_details', booking_id=booking.booking_id)
+
+        if request.method == 'POST':
+            remaining_count = booking.tickets.count()
+            passenger_name = ticket.passenger_name
+            
+            ticket.delete()
+            
+            if remaining_count <= 1:
+                booking.status = 'Cancelled'
+                booking.save()
+                messages.success(request, f"Ticket for {passenger_name} cancelled. Booking marked as Cancelled.")
+                return redirect('my_bookings')
+            else:
+                messages.success(request, f"Ticket for {passenger_name} cancelled.")
+                return redirect('booking_details', booking_id=booking.booking_id)
+
+    except Exception:
+        messages.error(request, "An error occurred.")
     
-    return render(request, 'bookings/booking_details.html', {'booking': booking})
+    return redirect('my_bookings')
+
 
 @login_required
 def download_ticket_pdf(request, booking_id):

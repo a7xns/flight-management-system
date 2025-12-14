@@ -37,7 +37,7 @@
 {% endblock %}
 
 {% block content %}
-<div class="container">
+<div class="container py-5">
     
     <div class="mb-4">
         <h2>Booking Details</h2>
@@ -111,20 +111,34 @@
                     <div class="ticket-separator"></div>
 
                     <h5 class="mb-3 text-primary">Passengers</h5>
-                    {% for ticket in booking.tickets.all %}
+                    {% for ticket in tickets %}
                         <div class="row g-4 mb-3 align-items-center">
-                            <div class="col-md-6">
+                            <div class="col-md-5">
                                 <small class="text-muted text-uppercase">Passenger Name</small>
                                 <div class="fw-bold fs-5">{{ ticket.passenger_name }}</div>
                                 <small class="text-muted">Passport: {{ ticket.passport }}</small>
                             </div>
-                            <div class="col-md-3 col-6">
+                            <div class="col-md-2 col-6">
                                 <small class="text-muted text-uppercase">Seat</small>
                                 <div class="fw-bold fs-4 text-primary">{{ ticket.seat_number }}</div>
                             </div>
-                            <div class="col-md-3 col-6">
+                            <div class="col-md-2 col-6">
                                 <small class="text-muted text-uppercase">Ticket ID</small>
                                 <div class="fw-bold fs-6 text-muted">#{{ ticket.ticket_id }}</div>
+                            </div>
+                            
+                            <div class="col-md-3 text-end">
+                                {% if booking.status != 'Cancelled' %}
+                                    <button class="btn btn-sm btn-outline-danger" 
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#cancelTicketModal"
+                                            data-passenger="{{ ticket.passenger_name }}"
+                                            data-action="{% url 'cancel_ticket' ticket.ticket_id %}">
+                                        Cancel Ticket
+                                    </button>
+                                {% else %}
+                                    <span class="badge bg-light text-muted">Cancelled</span>
+                                {% endif %}
                             </div>
                         </div>
                         {% if not forloop.last %}<hr class="my-3">{% endif %}
@@ -146,7 +160,7 @@
                     </div>
 
                     <div class="d-grid gap-3">
-                        <a href="{% url 'download_ticket_pdf' booking.booking_id %}" class="btn btn-primary shadow-sm">
+                        <a href="#" class="btn btn-primary shadow-sm disabled">
                             <i class="bi bi-download me-2"></i>Download E-Ticket
                         </a>
                         
@@ -154,12 +168,7 @@
                             Go to My Bookings
                         </a>
 
-                        {% if booking.status != 'Cancelled' %}
-                            <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#cancelModal">
-                                Cancel Booking
-                            </button>
-                        {% endif %}
-                    </div>
+                        </div>
 
                 </div>
             </div>
@@ -168,25 +177,39 @@
     </div>
 </div>
 
-<div class="modal fade" id="cancelModal" tabindex="-1" aria-hidden="true">
+<div class="modal fade" id="cancelTicketModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header border-0 pb-0">
-                <h5 class="modal-title fw-bold text-danger">Cancel Booking?</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-danger text-white border-0">
+                <h5 class="modal-title"><i class="bi bi-exclamation-triangle-fill me-2"></i>Cancel Ticket</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                <p>Are you sure you want to cancel booking <strong>#{{ booking.booking_id }}</strong>?</p>
-                <p class="text-muted small">This action cannot be undone.</p>
+            <div class="modal-body p-4">
+                <p class="fs-5">Cancel ticket for <strong id="modalPassengerName"></strong>?</p>
+                <p class="text-muted small mb-0">This action cannot be undone. If this is the last passenger, the entire booking will be cancelled.</p>
             </div>
-            <div class="modal-footer border-0 pt-0">
-                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
-                <form method="POST" action="#">
+            <div class="modal-footer border-0 bg-light">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Keep Ticket</button>
+                <form id="cancelTicketForm" method="POST">
                     {% csrf_token %}
-                    <button type="button" class="btn btn-danger disabled">Yes, Cancel (Not Implemented)</button>
+                    <button type="submit" class="btn btn-danger">Confirm Cancellation</button>
                 </form>
             </div>
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    var cancelModal = document.getElementById('cancelTicketModal');
+    cancelModal.addEventListener('show.bs.modal', function (event) {
+        var button = event.relatedTarget;
+        var passenger = button.getAttribute('data-passenger');
+        var actionUrl = button.getAttribute('data-action');
+        
+        cancelModal.querySelector('#modalPassengerName').textContent = passenger;
+        cancelModal.querySelector('#cancelTicketForm').action = actionUrl;
+    });
+</script>
 {% endblock %}
