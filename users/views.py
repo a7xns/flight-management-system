@@ -74,7 +74,7 @@ def user_login(request: HttpRequest) -> HttpResponse:
             password = form.cleaned_data.get('password')
 
             try:
-                user = User.objects.get(email=email)
+                user = User.objects.get(email__iexact=email)
                 user = authenticate(request, username=user.username, password=password)
 
                 if user is not None:

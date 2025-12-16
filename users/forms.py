@@ -66,7 +66,7 @@ class PassengerCreationForm(UserCreationForm):
             ValidationError: If a user with this email already exists.
         """
         email = self.cleaned_data.get('email')
-        if User.objects.filter(email=email).exists():
+        if User.objects.filter(email__iexact=email).exists():
             raise forms.ValidationError("This email is already registered. Please login instead.")
         return email
     
@@ -188,7 +188,7 @@ class EmailAuthenticationForm(AuthenticationForm):
 
         if email and password:
             try:
-                user = User.objects.get(email=email)
+                user = User.objects.get(email__iexact=email)
                 self.user_cache = user
             except User.DoesNotExist:
                 self.add_error('username', 'Invalid email or password.')

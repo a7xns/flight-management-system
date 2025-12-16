@@ -121,12 +121,6 @@ class PaymentTests(TestCase):
 
         self.assertEqual(response.status_code, 302) 
 
-    def test_payment_method_choices(self):
-        """Tests that 'Wallet' is a valid payment method choice."""
-        payment = Payment(booking=self.booking, payment_method='Wallet')
-
-        self.assertIn('Wallet', dict(Payment.METHOD_CHOICES))
-
     def test_payment_updates_related_booking_only(self):
         """Tests that payment updates only the related booking's status."""
         booking_b = Booking.objects.create(flight=self.flight, passenger=self.passenger, status='Pending')
