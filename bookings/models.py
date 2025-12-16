@@ -3,7 +3,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 
 class Booking(models.Model):
-    """Represents a flight booking made by a passenger.
+    """Represents a flight booking made by passenger.
     
     Attributes:
         booking_id: The unique identifier for the booking.

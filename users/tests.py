@@ -14,6 +14,7 @@ class PassengerRegistrationTests(TestCase):
     """Test cases for passenger registration view and form."""
     
     def setUp(self):
+        """Sets up the test client and registration URL."""
         self.client = Client()
         self.register_url = reverse('passenger_register')
     
@@ -44,14 +45,11 @@ class PassengerRegistrationTests(TestCase):
         }
         response = self.client.post(self.register_url, data)
         
-
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, reverse('user_login'))
         
-
         self.assertTrue(User.objects.filter(username='testpassenger@example.com').exists())
         
-
         user = User.objects.get(username='testpassenger@example.com')
         self.assertTrue(PassengerProfile.objects.filter(user=user).exists())
         profile = PassengerProfile.objects.get(user=user)
@@ -73,15 +71,11 @@ class PassengerRegistrationTests(TestCase):
         }
         response = self.client.post(self.register_url, data)
         
-
         self.assertEqual(response.status_code, 200)
         self.assertFalse(User.objects.filter(username='testpassenger').exists())
     
-
-
     def test_registration_duplicate_username(self):
         """Verifies that registration fails if the email (username) is already taken."""
-
         User.objects.create_user(
             username='existing@example.com',
             email='existing@example.com',
@@ -106,7 +100,10 @@ class PassengerRegistrationTests(TestCase):
         self.assertIn('form', response.context)
     
     def test_registration_invalid_email(self):
-        """Verifies that registration fails if the provided email format is invalid."""
+        """Verifies that registration fails if the provided email format is invalid.
+
+        Tests specifically for a missing @ and domain.
+        """
         data = {
             'username': 'testuser',
             'email': 'invalidemail',  # Missing @ and domain
@@ -121,7 +118,6 @@ class PassengerRegistrationTests(TestCase):
         }
         response = self.client.post(self.register_url, data)
         
-        # Should not redirect
         self.assertEqual(response.status_code, 200)
         self.assertFalse(User.objects.filter(username='testuser').exists())
 
@@ -130,10 +126,10 @@ class UserLoginTests(TestCase):
     """Test cases for user login view and form."""
     
     def setUp(self):
+        """Sets up the test users, login URL, and test (passenger and admin)."""
         self.client = Client()
         self.login_url = reverse('user_login')
         
-
         self.user = User.objects.create_user(
             username='testpassenger',
             email='testpassenger@example.com',
@@ -146,7 +142,6 @@ class UserLoginTests(TestCase):
             nationality='American'
         )
         
-
         self.admin_user = User.objects.create_user(
             username='testadmin',
             email='testadmin@example.com',
@@ -174,11 +169,9 @@ class UserLoginTests(TestCase):
         }
         response = self.client.post(self.login_url, data)
         
-
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, reverse('passenger_dashboard'))
         
-
         self.assertEqual(int(self.client.session['_auth_user_id']), self.user.pk)
     
     def test_successful_admin_login(self):
@@ -189,7 +182,6 @@ class UserLoginTests(TestCase):
         }
         response = self.client.post(self.login_url, data)
         
-
         self.assertEqual(response.status_code, 302)
         self.assertTrue('admin' in response.url)
     
@@ -201,7 +193,6 @@ class UserLoginTests(TestCase):
         }
         response = self.client.post(self.login_url, data)
         
-
         self.assertEqual(response.status_code, 200)
         self.assertFalse(response.wsgi_request.user.is_authenticated)
     
@@ -213,7 +204,6 @@ class UserLoginTests(TestCase):
         }
         response = self.client.post(self.login_url, data)
         
-
         self.assertEqual(response.status_code, 200)
         self.assertFalse(response.wsgi_request.user.is_authenticated)
     
@@ -225,7 +215,6 @@ class UserLoginTests(TestCase):
         }
         response = self.client.post(self.login_url, data)
         
-
         self.assertEqual(response.status_code, 200)
 
 
@@ -233,10 +222,10 @@ class PassengerDashboardTests(TestCase):
     """Test cases for passenger dashboard view."""
     
     def setUp(self):
+        """Sets up the test users dashboard URL for passenger user."""
         self.client = Client()
         self.dashboard_url = reverse('passenger_dashboard')
         
-
         self.user = User.objects.create_user(
             username='testpassenger',
             email='testpassenger@example.com',
@@ -253,7 +242,6 @@ class PassengerDashboardTests(TestCase):
         """Test that dashboard requires authentication."""
         response = self.client.get(self.dashboard_url)
         
-
         self.assertEqual(response.status_code, 302)
         self.assertIn('/login/', response.url)
     
@@ -278,17 +266,16 @@ class AdminDashboardTests(TestCase):
     """Test cases for admin dashboard view."""
     
     def setUp(self):
+        """Sets up the test users dashboard URL for admin user."""
         self.client = Client()
         self.admin_dashboard_url = reverse('admin_dashboard')
         
-
         self.passenger = User.objects.create_user(
             username='passenger',
             email='passenger@example.com',
             password='pass123'
         )
         
-
         self.admin_user = User.objects.create_user(
             username='admin',
             email='admin@example.com',
@@ -300,7 +287,6 @@ class AdminDashboardTests(TestCase):
         """Verifies that the admin dashboard redirects unauthenticated users to login."""
         response = self.client.get(self.admin_dashboard_url)
         
-
         self.assertEqual(response.status_code, 302)
     
     def test_passenger_cannot_access_admin_dashboard(self):
@@ -308,7 +294,6 @@ class AdminDashboardTests(TestCase):
         self.client.login(username='passenger', password='pass123')
         response = self.client.get(self.admin_dashboard_url)
         
-
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, reverse('passenger_dashboard'))
     
@@ -329,13 +314,13 @@ class AdminDashboardTests(TestCase):
 
 
 class ViewProfileTests(TestCase):
-    """Test cases for view profile view."""
+    """Test cases for profile view."""
     
     def setUp(self):
+        """Sets up the test profile URL for passenger user."""
         self.client = Client()
         self.profile_url = reverse('profile')
         
-
         self.user = User.objects.create_user(
             username='testpassenger',
             email='testpassenger@example.com',
@@ -352,7 +337,6 @@ class ViewProfileTests(TestCase):
         """Test that profile view requires authentication."""
         response = self.client.get(self.profile_url)
         
-
         self.assertEqual(response.status_code, 302)
     
     def test_profile_view_loads_for_authenticated_user(self):
@@ -375,9 +359,9 @@ class UserLogoutTests(TestCase):
     """Test cases for user logout functionality."""
     
     def setUp(self):
+        """Sets up the test client and a test user."""
         self.client = Client()
         
-
         self.user = User.objects.create_user(
             username='testuser',
             email='test@example.com',
@@ -394,25 +378,19 @@ class UserLogoutTests(TestCase):
         """Test that logout endpoint requires authentication."""
         response = self.client.get(reverse('user_logout'))
         
-
         self.assertEqual(response.status_code, 302)
     
     def test_successful_logout(self):
         """Test that user is logged out successfully."""
-
         self.client.login(username='testuser', password='testpass123')
         
-
         response = self.client.get(reverse('passenger_dashboard'))
         self.assertEqual(response.status_code, 200)
         
-
         response = self.client.get(reverse('user_logout'))
         
-
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, reverse('user_login'))
         
-
         response = self.client.get(reverse('passenger_dashboard'))
         self.assertEqual(response.status_code, 302)
